@@ -1,0 +1,12 @@
+anthropic
+python-dotenv
+pydantic
+pypdf
+python-docx
+jinja2
+weasyprint
+fastapi
+uvicorn
+streamlit
+pytest
+httpx

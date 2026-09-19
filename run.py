@@ -1,0 +1,1 @@
+print("CVGlowUp is starting... 🚀")

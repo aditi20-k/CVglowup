@@ -1,0 +1,22 @@
+# Virtual environment
+.venv/
+
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Uploaded CVs
+uploads/
+
+# Generated files
+generated/
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
