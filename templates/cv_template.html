@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ cv.name }} - CV</title>
+
+    <style>
+        @page {
+            size: A4;
+            margin: 40px 45px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #222;
+            line-height: 1.5;
+            font-size: 11px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 4px;
+            margin-top: 20px;
+        }
+
+        h3 {
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        p {
+            margin: 5px 0;
+        }
+
+        ul {
+            margin-top: 4px;
+            padding-left: 18px;
+        }
+
+        li {
+            margin-bottom: 3px;
+        }
+
+        .header {
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .section {
+            margin-bottom: 12px;
+        }
+
+        .item {
+            margin-bottom: 10px;
+        }
+
+        .period {
+            color: #666;
+            font-style: italic;
+        }
+
+        .skills {
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>{{ cv.name }}</h1>
+        <div class="subtitle">DevOps Engineer</div>
+    </div>
+
+    <div class="section">
+        <h2>Professional Summary</h2>
+        <p>{{ cv.summary }}</p>
+    </div>
+
+    <div class="section">
+        <h2>Experience</h2>
+
+        {% for exp in cv.experience %}
+        <div class="item">
+            <h3>{{ exp.role }} — {{ exp.company }}</h3>
+            <div class="period">{{ exp.duration }}</div>
+
+            <ul>
+                {% for responsibility in exp.responsibilities %}
+                <li>{{ responsibility }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="section">
+        <h2>Projects</h2>
+
+        {% for project in cv.projects %}
+        <div class="item">
+            <h3>{{ project.title }}</h3>
+
+            <p>{{ project.description }}</p>
+
+            <p>
+                <strong>Technologies:</strong>
+                {{ project.technologies | join(", ") }}
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="section">
+        <h2>Technical Skills</h2>
+
+        <p class="skills">
+            {% for skill in cv.skills %}
+                {{ skill }}{% if not loop.last %} • {% endif %}
+            {% endfor %}
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Education</h2>
+
+        {% for edu in cv.education %}
+        <div class="item">
+            <h3>{{ edu.degree }}</h3>
+            <p>{{ edu.institution }} — {{ edu.period }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="section">
+        <h2>Certifications</h2>
+
+        <ul>
+            {% for cert in cv.certifications %}
+            <li>{{ cert }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</body>
+</html>
