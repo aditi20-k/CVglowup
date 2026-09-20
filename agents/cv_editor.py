@@ -1,54 +1,61 @@
 import json
 
 from google import genai
+
 from app.config import GEMINI_API_KEY
 from models.cv_schema import CVData
+from prompts.editor_prompt import build_editor_prompt
+
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 
+def extract_json(text):
+    text = text.strip()
+
+    try:
+        return json.loads(text)
+
+    except json.JSONDecodeError:
+        start = text.find("{")
+        end = text.rfind("}")
+
+        if start == -1 or end == -1:
+            raise ValueError(
+                "Could not find a valid JSON object in Gemini response."
+            )
+
+        json_text = text[start:end + 1]
+
+        try:
+            return json.loads(json_text)
+
+        except json.JSONDecodeError as e:
+            raise ValueError(
+                f"Gemini returned invalid JSON: {e}"
+            )
+
+
 def apply_suggestions(cv_data: CVData, suggestions):
-    prompt = f"""
-You are a professional CV editor.
 
-You have the original structured CV and a list of approved suggestions.
-
-Apply the suggestions to improve the CV for a DevOps Engineer position.
-
-Rules:
-- Keep factual information unchanged.
-- Do not invent companies, certifications, experience, skills, or achievements.
-- Improve wording where suggested.
-- Keep the CV professional and concise.
-- Return ONLY valid JSON matching the CV structure exactly.
-
-CV:
-{json.dumps(cv_data.model_dump(), indent=2)}
-
-APPROVED SUGGESTIONS:
-{json.dumps(suggestions, indent=2)}
-
-Return this exact structure:
-
-{{
-    "name": "",
-    "summary": "",
-    "education": [],
-    "experience": [],
-    "skills": [],
-    "projects": [],
-    "certifications": [],
-    "strengths": [],
-    "weaknesses": [],
-    "suggestions": []
-}}
-"""
+    prompt = build_editor_prompt(
+        cv_data,
+        suggestions
+    )
 
     response = client.models.generate_content(
         model="gemini-3.1-flash-lite",
-        contents=prompt
+        contents=prompt,
+        config={
+            "response_mime_type": "application/json"
+        }
     )
 
-    data = json.loads(response.text)
+    if not response.text:
+        raise ValueError(
+            "Gemini returned an empty response."
+        )
+
+    data = extract_json(response.text)
 
     return CVData(**data)
